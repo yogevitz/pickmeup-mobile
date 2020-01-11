@@ -10,6 +10,7 @@
     "http-proxy-middleware": "^0.20.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-qr-reader": "^2.2.1",
     "react-scripts": "3.3.0"
   },
   "scripts": {
