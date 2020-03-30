@@ -6,15 +6,12 @@ export default class QRScanner extends Component {
     super(props);
     this.state = {
       delay: 300,
-      result: "No result"
     };
     this.handleScan = this.handleScan.bind(this);
   }
   handleScan(data) {
     if (data) {
-      this.setState({
-        result: data
-      });
+      this.props.onScan(data);
     }
   }
   handleError(err) {
@@ -29,7 +26,6 @@ export default class QRScanner extends Component {
           onScan={this.handleScan}
           style={{ width: "100%" }}
         />
-        <p>{this.state.result}</p>
       </div>
     );
   }
