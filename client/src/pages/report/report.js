@@ -4,6 +4,11 @@ import CardHeader from "@material-ui/core/CardHeader";
 import CardContent from "@material-ui/core/CardContent";
 import Card from "@material-ui/core/Card";
 
+const columns = [
+  { title: 'Name', field: 'name' },
+  { title: 'ID', field: 'riderID' },
+];
+
 class Report extends React.Component {
   constructor(props) {
     super(props);
@@ -15,10 +20,7 @@ class Report extends React.Component {
         <CardHeader title={'Beer Sheva 1 Morning Report'} />
         <CardContent>
           <Table
-            columns={[
-              { title: 'Name', field: 'name' },
-              { title: 'ID', field: 'riderID', type: 'numeric' },
-            ]}
+            columns={columns}
             data={[
               {
                 name: 'Benjamin Netanyahu',
