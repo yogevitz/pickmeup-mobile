@@ -1,8 +1,11 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
+
+const jwt = require("jsonwebtoken");
 let assert = require('assert');
 usernames = [ { id: 0, name: "user0" } ];
+secret = "PickMeUp";
 //-------------connecting to the mongoDB server----------//
 
 
@@ -65,6 +68,36 @@ app.get("/getRider/:sid", (req, res) => {
 
 
 });
+
+//------//
+app.get("/getShuttleRiders", (req, res) => {
+  console.log("Got GET Request");
+  var shuttleID = req.body.shuttleID;
+  var date = req.body.date;
+  var direction = req.body.direction;
+  MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
+  {
+    assert.equal(null, err);
+    console.log("Successfully connected to server");
+    var db = client.db('PickMeUp');
+    // Find some documents in our collection
+    db.collection('ShuttleRiders').find({shuttleID:shuttleID,date:date,direction:direction}).toArray(function(err, docs) {
+      // Print the documents returned
+      res.status(200).send(docs)
+      // Close the DB
+      client.close();
+    });
+    // Declare success
+    console.log("Called find()");
+  });
+
+
+
+  client.close();
+
+
+});
+
 
 
 //------//
@@ -262,6 +295,12 @@ app.get("/getPassword/:userID", (req, res) => {
 
 //-------------All POST requests--------------//
 
+app.post("/login", (req, res) => {
+  payload = { id: generateSupervisorId(), name: req.body.name, admin: true };
+  options = { expiresIn: "1d" };
+  const token = jwt.sign(payload, secret, options);
+  res.send(token);
+});
 
 //------//
 app.post("/api/createShuttle", (req, res) => {
@@ -415,7 +454,8 @@ app.post("/api/assignRider", (req, res) => {
     shuttleID: req.body.shuttleID,
     date: req.body.date,
     direction : req.body.direction,
-    // flag: req.body.flag,
+    mark:""
+
   };
   console.log(req.body.shuttleID + " idan");
   MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
@@ -439,6 +479,47 @@ app.post("/api/assignRider", (req, res) => {
   console.log("Called find()");
 });
 
+
+app.post("/api/markRider", (req, res) => {
+  console.log("got new post request");
+  const riderShuttle = {
+    riderID : req.body.riderID,
+    shuttleID: req.body.shuttleID,
+    date: req.body.date,
+    direction : req.body.direction,
+    mark: req.body.mark
+
+  };
+  MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
+  {
+    assert.equal(null, err);
+    console.log("Successfully connected to server");
+    var db = client.db('PickMeUp');
+
+    // Find some documents in our collection
+    try{
+      db.collection('ShuttleRiders').updateOne(
+        {"riderID" : riderShuttle.riderID,
+          "shuttleID": riderShuttle.shuttleID,
+          "date":riderShuttle.date,
+          "direction":riderShuttle.direction},
+
+        { $set:
+          riderShuttle
+        }
+      );
+    }catch(e){
+      res.status(400).send(e)
+    }
+    // Print the documents returned
+
+    res.status(200).send(" Rider marked to Shuttle!");
+    // Close the DB
+    client.close();
+  });
+  // Declare success
+  console.log("Called find()");
+});
 
 //------//
 app.post("/api/createSupervisor", (req, res) => {
@@ -547,39 +628,36 @@ app.post("/api/updatePassword", (req, res) => {
   console.log("got new post request");
 
   const User = {
-    userId: req.body.userId,
-    password: req.body.password,
-    FirstName:req.body.FirstName,
-    LastName : req.body.LastName
-
+    userID: req.body.userID,
+    password: req.body.password
   };
+  console.log(User.userID)
   MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
   {
     assert.equal(null, err);
     console.log("Successfully connected to server");
     let db = client.db('PickMeUp');
     try{
-      db.collection('User').findOne(
-        {"userId" : User.userId}
+      db.collection('Users').findOne(
+        {"userID" : User.userID}
       );
     }catch(e){
       res.status(400).send(e)
     }
     // Find some documents in our collection
     try{
-      db.collection('User').updateOne(
-        {"userId" : User.userId},
+      db.collection('Users').updateOne(
+        {"userID" : User.userID},
 
         { $set:
-          User
-
+            {"password": User.password}
         }
       );
     }catch(e){
       res.status(400).send(e)
     }
     // Print the documents returned
-    res.status(200).send(" Rider Changed!");
+    res.status(200).send(" Password Changed!");
     // Close the DB
     client.close();
   });
@@ -593,7 +671,83 @@ app.post("/api/updatePassword", (req, res) => {
 
 //------//
 app.post("/api/setRiderShuttles", (req, res) => {
+  console.log("got new post request");
+  console.log(req.body.length)
+  for(var i = 0 ; i < req.body.length ; i ++ ) {
+    const Rider = {
+      riderID: req.body[i].riderID,
+      shuttleID: req.body[i].shuttleID,
+      destination: req.body[i].destination,
+      time: req.body[i].time,
+      date: req.body[i].date
+    };
+    MongoClient.connect(uri, {useNewUrlParser: true}, function (err, client) {
+      assert.equal(null, err);
+      console.log("Successfully connected to server");
+      var db = client.db('PickMeUp');
 
+      // Find some documents in our collection
+      try {
+        db.collection('ShuttleRiders').updateOne(
+          {"riderID": Rider.riderID,
+            "shuttleID":Rider.shuttleID},
+          {
+            $set:
+            Rider
+          }
+        );
+      } catch (e) {
+        res.status(400).send(e)
+      }
+
+      // Print the documents returned
+      client.close();
+    });
+  }
+  res.status(200).send("All Shuttle riders been updated!");
+  // Declare success
+  console.log("Called find()");
+
+
+});
+
+//------//
+app.post("/api/removeRiderShuttles", (req, res) => {
+  console.log("got new post request");
+  console.log(req.body.length)
+  for(var i = 0 ; i < req.body.length ; i ++ ) {
+    const Rider = {
+      riderID: req.body[i].riderID,
+      shuttleID: req.body[i].shuttleID,
+      destination: req.body[i].destination,
+      time: req.body[i].time,
+      date: req.body[i].date
+    };
+    MongoClient.connect(uri, {useNewUrlParser: true}, function (err, client) {
+      assert.equal(null, err);
+      console.log("Successfully connected to server");
+      var db = client.db('PickMeUp');
+
+      // Find some documents in our collection
+      try {
+        db.collection('ShuttleRiders').deleteOne(
+          {"riderID": Rider.riderID,
+            "shuttleID":Rider.shuttleID,
+            "time":Rider.time,
+            "date":Rider.date,
+            "destination":Rider.destination},
+        );
+      } catch (e) {
+        res.status(400).send(e)
+      }
+
+      // Print the documents returned
+      client.close();
+    });
+  }
+  res.status(200).send("All Shuttle riders been deleted!");
+  // Declare success
+  console.log("Called find()");
 
 
 });
@@ -601,7 +755,40 @@ app.post("/api/setRiderShuttles", (req, res) => {
 
 //------//
 app.post("/api/setRiderDefultes", (req, res) => {
+  console.log("got new post request");
+  const Rider = {
+    sid: req.body.sid,
+    name: req.body.name,
+    parentName : req.body.parentName,
+    parentPhone : req.body.parentPhone,
+    parentEmail : req.body.parentEmail
+  };
+  MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
+  {
+    assert.equal(null, err);
+    console.log("Successfully connected to server");
+    var db = client.db('PickMeUp');
 
+    // Find some documents in our collection
+    try{
+      db.collection('Riders').updateOne(
+        {"sid" : Rider.sid},
+
+        { $set:
+          Rider
+
+        }
+      );
+    }catch(e){
+      res.status(400).send(e)
+    }
+    // Print the documents returned
+    res.status(200).send(" Rider Changed!");
+    // Close the DB
+    client.close();
+  });
+  // Declare success
+  console.log("Called find()");
 
 
 });
@@ -632,4 +819,22 @@ function generateID(length) {
 const port = process.env.PORT || 5000; //environment variable
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
+});
+
+
+app.post("/private", (req, res) => {
+  const token = req.header("x-auth-token");
+  // no token
+  if (!token) res.status(401).send("Access denied. No token provided.");
+  // verify token
+  try {
+    const decoded = jwt.verify(token, secret);
+    req.decoded = decoded;
+    if (req.decoded.admin)
+      res.status(200).send({ result: "Hello admin." });
+    else
+      res.status(200).send({ result: "Hello user." });
+  } catch (exception) {
+    res.status(400).send("Invalid token.");
+  }
 });
