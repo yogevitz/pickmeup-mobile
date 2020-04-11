@@ -16,6 +16,8 @@ import Edit from '@material-ui/icons/Edit';
 import Check from '@material-ui/icons/Check';
 import FilterList from '@material-ui/icons/FilterList';
 import Remove from '@material-ui/icons/Remove';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import PersonAddDisabledIcon from '@material-ui/icons/PersonAddDisabled';
 
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -35,7 +37,9 @@ const tableIcons = {
   Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
   SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+  PersonAdd: forwardRef((props, ref) => <PersonAddIcon {...props} ref={ref} />),
+  PersonAddDisabled: forwardRef((props, ref) => <PersonAddDisabledIcon {...props} ref={ref} />)
 };
 
 
@@ -44,19 +48,39 @@ class Table extends React.Component {
     super(props);
     this.state = {
       data: props.data,
+      isAddOn: false,
     }
   }
 
+  onAdd = () => {
+    const { handleAdd } = this.props;
+    this.setState({ isAddOn: !this.state.isAddOn });
+    handleAdd();
+  };
+
   render() {
     const { columns, data, query, onSelectionChange } = this.props;
+    const { isAddOn } = this.state;
     return (
       <MaterialTable
         title=""
         columns={columns}
+        actions={[
+          {
+            icon: isAddOn ? tableIcons.PersonAddDisabled : tableIcons.PersonAdd,
+            tooltip: 'Add User',
+            location: 'toolbar',
+            onClick: this.onAdd,
+          }
+        ]}
+        editable={{
+          onRowAdd: this.onAdd,
+        }}
         data={query !== '' ? data.filter(rider => rider.riderID === query) : data}
         customFilterAndSearch={() => query !== ''}
         icons={tableIcons}
         options={{
+          toolbar: true,
           paging: false,
           selection: true,
           showTextRowsSelected: false,
