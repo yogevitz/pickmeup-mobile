@@ -208,21 +208,23 @@ app.get("/getShuttleRiders", (req, res) => {
 });
 
 //------//
-app.get("/getShuttleRiderByRider", (req, res) => {
+app.get("/getShuttleRidersByRider/:riderID", (req, res) => {
   console.log("Got GET Request");
-  var riderID = req.body.riderID;
+  let riderID = req.params.riderID;
   MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
   {
     assert.equal(null, err);
     console.log("Successfully connected to server");
-    var db = client.db('PickMeUp');
+    let db = client.db('PickMeUp');
     // Find some documents in our collection
-    db.collection('ShuttlesRiders').find({riderID:riderID}).toArray(function(err, docs) {
+    db.collection('ShuttlesRiders').find({ riderID }).toArray(function(err, docs) {
       // Print the documents returned
-      if(docs.length===0)
-        res.status(200).send([])
-      else
-        res.status(200).send(docs)
+      if (docs.length === 0) {
+        res.status(200).send([]);
+      }
+      else {
+        res.status(200).send(docs);
+      }
       // Close the DB
       client.close();
     });
@@ -234,21 +236,23 @@ app.get("/getShuttleRiderByRider", (req, res) => {
 
 
 //------//
-app.get("/getShuttleRiderByShuttle", (req, res) => {
+app.get("/getShuttleRidersByShuttle/:shuttleID", (req, res) => {
   console.log("Got GET Request");
-  var shuttleID = req.body.shuttleID;
+  let shuttleID = req.params.shuttleID;
   MongoClient.connect(uri,{ useNewUrlParser: true }, function(err, client)
   {
     assert.equal(null, err);
     console.log("Successfully connected to server");
-    var db = client.db('PickMeUp');
+    let db = client.db('PickMeUp');
     // Find some documents in our collection
-    db.collection('ShuttlesRiders').find({shuttleID:shuttleID}).toArray(function(err, docs) {
+    db.collection('ShuttlesRiders').find({ shuttleID }).toArray(function(err, docs) {
       // Print the documents returned
-      if(docs.length===0)
-        res.status(200).send([])
-      else
-        res.status(200).send(docs)
+      if (docs.length === 0) {
+        res.status(200).send([]);
+      }
+      else {
+        res.status(200).send(docs);
+      }
       // Close the DB
       client.close();
     });
