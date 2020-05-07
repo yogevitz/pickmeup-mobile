@@ -38,9 +38,9 @@ class Report extends React.Component {
       newChecked = selectedIDs.filter(x => this.checked.indexOf(x) < 0);
       this.checked.push(...newChecked);
       newChecked.forEach(async checked => await setLiftRiderMark({
-        shuttleID: '1',
+        shuttleID: '65599946353',
         riderID: checked,
-        date: '18-04-2020',
+        date: '07-05-2020',
         direction: 'Afternoon',
         mark: '1',
       }));
@@ -48,9 +48,9 @@ class Report extends React.Component {
       newUnChecked = this.checked.filter(x => selectedIDs.indexOf(x) < 0);
       this.checked = this.checked.filter(_ => newUnChecked.indexOf(_) < 0);
       newUnChecked.forEach(async unChecked => await setLiftRiderMark({
-        shuttleID: '1',
+        shuttleID: '65599946353',
         riderID: unChecked,
-        date: '18-04-2020',
+        date: '07-05-2020',
         direction: 'Afternoon',
         mark: '0',
       }));
@@ -100,8 +100,8 @@ class Report extends React.Component {
   render() {
     const { shuttleRiders, query, showScanner, isAddRiderShown, riders } = this.state;
     return (
-      <Card>
-        <CardHeader title={'Shoval Bus 1 Afternoon Report'} />
+      <Card style={{ backgroundColor: 'OldLace' }}>
+        <CardHeader title={'Beer Sheva Afternoon'} />
         <CardContent>
           {showScanner
             ? (
@@ -113,7 +113,7 @@ class Report extends React.Component {
               </div>
             )
             : (
-              <Button style={{ marginBottom: '10px' }} variant="contained" onClick={this.onClickShowScanner}>
+              <Button style={{ marginBottom: '30px' }} variant="contained" onClick={this.onClickShowScanner}>
                 Scan
               </Button>
             )
