@@ -63,10 +63,16 @@ class Report extends React.Component {
     return ({ ...rider, tableData: { checked } });
   };
 
+  filterMissingAndPresentRiders = rider => {
+    return rider.mark === '0' || rider.mark === '1';
+  };
+
   async componentDidMount() {
     const allRiders = await getAllRiders();
-    let liftRiders = await getLiftRiders({ shuttleID: '1', date: '18-04-2020', direction: 'Afternoon' });
-    liftRiders = liftRiders.map(this.getRiderRowData);
+    let liftRiders = await getLiftRiders({ shuttleID: '65599946353', date: '07-05-2020', direction: 'Afternoon' });
+    liftRiders = liftRiders
+      .filter(this.filterMissingAndPresentRiders)
+      .map(this.getRiderRowData);
     this.setState({ shuttleRiders: liftRiders, riders: allRiders });
   }
 
