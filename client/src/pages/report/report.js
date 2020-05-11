@@ -40,8 +40,7 @@ class Report extends React.Component {
       newChecked.forEach(async checked => await setLiftRiderMark({
         shuttleID: '65599946353',
         riderID: checked,
-        date: '07-05-2020',
-        direction: 'Afternoon',
+        date: '11-05-2020',
         mark: '1',
       }));
     } else {
@@ -50,8 +49,7 @@ class Report extends React.Component {
       newUnChecked.forEach(async unChecked => await setLiftRiderMark({
         shuttleID: '65599946353',
         riderID: unChecked,
-        date: '07-05-2020',
-        direction: 'Afternoon',
+        date: '11-05-2020',
         mark: '0',
       }));
     }
@@ -69,7 +67,7 @@ class Report extends React.Component {
 
   async componentDidMount() {
     const allRiders = await getAllRiders();
-    let liftRiders = await getLiftRiders({ shuttleID: '65599946353', date: '07-05-2020', direction: 'Afternoon' });
+    let liftRiders = await getLiftRiders({ shuttleID: '65599946353', date: '11-05-2020' });
     liftRiders = liftRiders
       .filter(this.filterMissingAndPresentRiders)
       .map(this.getRiderRowData);
