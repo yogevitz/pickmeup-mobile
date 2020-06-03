@@ -65,6 +65,22 @@ class Table extends React.Component {
       <MaterialTable
         title=""
         columns={columns}
+        localization={{
+          body: {
+            addTooltip: 'הוספה',
+            deleteTooltip: 'מחיקה',
+            editTooltip: 'עריכה',
+            editRow: {
+              saveTooltip: 'שמירה',
+              cancelTooltip: 'ביטול',
+              deleteText: 'מחיקה',
+            }
+          },
+          toolbar: {
+            searchPlaceholder: 'חיפוש',
+            nRowsSelected: '{0} סומנו'
+          },
+        }}
         actions={[
           {
             icon: isAddOn ? tableIcons.PersonAddDisabled : tableIcons.PersonAdd,
@@ -83,8 +99,8 @@ class Table extends React.Component {
           toolbar: true,
           paging: false,
           selection: true,
-          showTextRowsSelected: false,
-          searchFieldAlignment: 'left'
+          showTextRowsSelected: true,
+          showSelectAllCheckbox: false,
         }}
         onSelectionChange={onSelectionChange}
       />
