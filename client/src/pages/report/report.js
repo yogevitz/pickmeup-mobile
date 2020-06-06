@@ -95,7 +95,7 @@ class Report extends React.Component {
   };
 
   showInfoAlert = riderName => {
-    this.infoAlertText = `____${riderName}____`;
+    this.infoAlertText = `${riderName}`;
     this.setState({ isInfoAlertShown: true });
   };
 

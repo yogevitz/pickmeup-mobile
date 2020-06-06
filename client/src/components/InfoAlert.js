@@ -12,11 +12,13 @@ export class InfoAlert extends React.Component {
   render() {
     const { isOpen, onClose, severity, text } = this.props;
     return (
-      <Snackbar open={isOpen} autoHideDuration={3000} onClose={onClose}>
-        <MuiAlert elevation={6} variant="filled" onClose={onClose} severity={severity}>
-          {text}
-        </MuiAlert>
-      </Snackbar>
+      <div dir="ltr">
+        <Snackbar open={isOpen} autoHideDuration={3000} onClose={onClose}>
+          <MuiAlert elevation={6} variant="filled" onClose={onClose} severity={severity}>
+            {text}
+          </MuiAlert>
+        </Snackbar>
+      </div>
     );
   }
 }
