@@ -85,7 +85,6 @@ class Report extends React.Component {
   }
 
   handleScan = id => {
-    this.setState({ showScanner: false });
     const { shuttleRiders } = this.state;
     const rider = shuttleRiders.find(rider => rider.riderID === id);
     if (rider) {
